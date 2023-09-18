@@ -1,3 +1,5 @@
+pub mod generator;
+
 use std::env;
 use std::fs::File;
 use std::io::Write;
@@ -23,7 +25,7 @@ fn main() {
     let lang_type: &str = &args[3];
 
     println!("Generating all {limit} cases...");
-    let code: String = match generate_code(lang_type, limit) {
+    let code: String = match generator::code::generate(lang_type, limit) {
         Ok(s) => s,
         Err(e) => {
             println!("{e}");
@@ -40,21 +42,6 @@ fn main() {
 
 fn write_usage(exec_name: &str) {
     println!("Usage: {exec_name} <LIMIT> <FILENAME> <LANGUAGE>");
-}
-
-fn generate_code(lang_type: &str, num_reps: u32) -> Result<String, String> {
-    let mut code: String = "".to_string();
-
-    if lang_type == "python" {
-        code.push_str("def is_odd(n):\n");
-        for num in 1..num_reps + 1 {
-            let is_odd: &str = if num % 2 == 0 { "False" } else { "True" };
-            code.push_str(&format!("    if n == {num}:\n        return {is_odd}\n")[..]);
-        }
-        return Ok(code);
-    }
-    // make an actual error type pls
-    return Err(format!("Could not recognise the language {lang_type}."));
 }
 
 fn write_to_file(content: &str, path: &str) -> std::io::Result<()> {
